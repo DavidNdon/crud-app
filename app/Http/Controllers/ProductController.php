@@ -32,10 +32,14 @@ class ProductController extends Controller
         $product = Product::create($request->only(['name', 'description', 'amount']));
 
         // Handle multiple image uploads using image_path
+        // Inside your store or update method:
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $image) {
                 $path = $image->store('products', 'public');
-                $product->images()->create(['image_path' => $path]);
+
+                $product->images()->create([
+                    'image_path' => $path
+                ]);
             }
         }
 
@@ -66,12 +70,32 @@ class ProductController extends Controller
         $product->update($request->only(['name', 'description', 'amount']));
 
         // Handle appending newly uploaded images using image_path
+        // Inside your store or update method:
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $image) {
                 $path = $image->store('products', 'public');
-                $product->images()->create(['image_path' => $path]);
+
+                $product->images()->create([
+                    'image_path' => $path
+                ]);
             }
         }
+
+            if ($request->has('delete_images') && is_array($request->delete_images)) {
+        foreach ($request->delete_images as $imageId) {
+            $img = ProductImage::find($imageId);
+            
+            if ($img) {
+                // Delete file from storage folder if it exists
+                if (Storage::disk('public')->exists($img->image_path)) {
+                    Storage::disk('public')->delete($img->image_path);
+                }
+                
+                // Delete record from database
+                $img->delete();
+            }
+        }
+    }
 
         return redirect()->route('products.index')->with('success', 'Product updated successfully.');
     }
