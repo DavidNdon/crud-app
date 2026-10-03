@@ -37,7 +37,7 @@
                     <div class="grid grid-cols-3 gap-3">
                         @foreach($product->images as $img)
                             <div class="relative overflow-hidden rounded-lg border border-slate-200 aspect-square bg-white shadow-sm">
-                                <img src="{{ asset('storage/' . $img->path) }}" alt="Product Image" class="object-cover w-full h-full">
+                                <img src="{{ asset('storage/' . $img->image_path) }}" alt="Product Image" class="object-cover w-full h-full">
                             </div>
                         @endforeach
                     </div>
